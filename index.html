@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foodfy | Marketplace</title>
+<style>
+:root{--g:#087f5b;--g2:#12a06f;--mint:#e9f8f1;--cream:#fffaf2;--orange:#ff9f43;--dark:#15352d;--text:#40524d;--muted:#7b8b86;--line:#e4ece8;--white:#fff;--danger:#e55353;--shadow:0 15px 45px #15352d14}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Tahoma,Arial,sans-serif;background:var(--cream);color:var(--dark);line-height:1.7}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.container{width:min(1180px,92%);margin:auto}
+.btn{border:0;border-radius:13px;padding:11px 18px;font-weight:800;transition:.2s}.btn:hover{transform:translateY(-2px)}
+.primary{background:var(--g);color:white}.secondary{background:white;color:var(--g);border:1px solid var(--line)}.danger{background:#fff0f0;color:var(--danger)}
+.nav{position:sticky;top:0;z-index:50;background:#fffaf2ed;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.navin{height:75px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-size:30px;font-weight:900;color:var(--g)}.logo span{color:var(--orange)}
+.links{display:flex;list-style:none;gap:23px}.links a{color:var(--dark);text-decoration:none;font-weight:700}
+.navright{display:flex;gap:8px;align-items:center}.iconbtn{border:1px solid var(--line);background:#fff;border-radius:12px;width:43px;height:43px}
+.hero{padding:65px 0}.heroGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
+.tag{display:inline-block;background:var(--mint);color:var(--g);padding:7px 14px;border-radius:30px;font-weight:800;margin-bottom:14px}
+.hero h1{font-size:clamp(40px,5vw,66px);line-height:1.12;margin-bottom:18px}.hero h1 span{color:var(--g)}
+.hero p{font-size:18px;color:var(--text);max-width:650px;margin-bottom:24px}.heroBtns{display:flex;gap:10px;flex-wrap:wrap}
+.stats{display:flex;gap:30px;margin-top:28px}.stats b{display:block;color:var(--g);font-size:22px}.stats small{color:var(--muted)}
+.heroArt{height:440px;position:relative}.blob{position:absolute;inset:20px 0;background:#dff5e9;border-radius:48% 52% 45% 55%;transform:rotate(-7deg)}
+.foodCard{position:absolute;background:white;border-radius:24px;padding:15px;box-shadow:var(--shadow);width:315px;right:45px;top:25px;transform:rotate(3deg)}
+.foodCard.small{width:225px;right:auto;left:0;top:auto;bottom:30px;transform:rotate(-5deg)}
+.foodImg{height:185px;border-radius:17px;display:grid;place-items:center;font-size:75px;background:linear-gradient(135deg,#ffc66d,#f06b37);margin-bottom:12px}.small .foodImg{height:110px;font-size:52px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.price{font-size:22px;font-weight:900;color:var(--g)}.old{text-decoration:line-through;color:#9aa8a3}.discount{background:#fff0dc;color:#d86b10;border-radius:9px;padding:4px 8px;font-size:12px;font-weight:900}.muted{color:var(--muted);font-size:12px}
+section{padding:70px 0}.head{text-align:center;margin-bottom:30px}.head h2{font-size:35px;margin:5px 0}.head p{color:var(--muted);max-width:650px;margin:auto}
+.offers{background:#f3faf6}.toolbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}.search{border:1px solid var(--line);background:white;border-radius:13px;padding:13px 15px;min-width:290px;outline:0}.filters{display:flex;gap:7px;flex-wrap:wrap}.filter{background:white;border:1px solid var(--line);border-radius:11px;padding:9px 13px}.filter.active{background:var(--g);color:white}
+.offerGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.offer{background:white;border:1px solid var(--line);border-radius:21px;overflow:hidden;box-shadow:0 8px 25px #15352d0b}.offerImg{height:185px;display:grid;place-items:center;font-size:70px;position:relative}.offerImg .discount{position:absolute;top:12px;right:12px}.a{background:linear-gradient(135deg,#ffd59b,#f38a4c)}.b{background:linear-gradient(135deg,#d7f3df,#8bd7a7)}.c{background:linear-gradient(135deg,#ffe2d5,#f29b84)}.offerBody{padding:16px}.offerBody h3{font-size:18px}.offerBody p{font-size:13px;color:var(--muted)}.offerMeta{display:flex;justify-content:space-between;align-items:center;margin:12px 0}.offerBottom{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.infoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.info{background:white;border:1px solid var(--line);border-radius:22px;padding:25px}.icon{width:55px;height:55px;border-radius:16px;background:var(--mint);display:grid;place-items:center;font-size:27px;margin-bottom:14px}.info p{color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.step{background:white;padding:23px;border-radius:20px;box-shadow:0 8px 25px #15352d09;position:relative}.num{position:absolute;left:13px;top:13px;background:var(--g);color:white;width:29px;height:29px;border-radius:50%;display:grid;place-items:center}.big{font-size:40px}
+.detail{background:white}.detailBox{display:grid;grid-template-columns:1fr 1fr;gap:35px;background:#f7fbf9;border:1px solid var(--line);border-radius:28px;padding:25px}.detailImg{min-height:370px;border-radius:22px;background:linear-gradient(135deg,#ffd59b,#f38a4c);display:grid;place-items:center;font-size:130px}.detailInfo h2{font-size:35px;margin:10px 0}.detailInfo .bigprice{font-size:32px;color:var(--g);font-weight:900}.qty{display:flex;align-items:center;gap:10px;margin:18px 0}.qty button{border:1px solid var(--line);background:white;border-radius:10px;width:38px;height:38px}.qty span{font-weight:900}
+.checkout{background:#fff}.checkoutGrid{display:grid;grid-template-columns:1fr .8fr;gap:20px}.panel{border:1px solid var(--line);border-radius:20px;background:white;padding:22px}.form{display:grid;gap:11px;margin-top:15px}.form input,.form select,.form textarea{border:1px solid var(--line);border-radius:11px;padding:12px;outline:0}.summaryLine{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.orders{background:#f3faf6}.orderCard{background:white;border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:13px}.status{color:var(--g);font-weight:900}.timeline{display:flex;justify-content:space-between;gap:8px;margin:25px 0}.tl{flex:1;text-align:center;font-size:12px;color:var(--muted)}.tl i{display:block;margin:auto auto 7px;width:35px;height:35px;border-radius:50%;background:#dceae5;padding-top:6px;font-style:normal}.tl.done{color:var(--g);font-weight:800}.tl.done i{background:var(--g);color:white}
+.dashSection{background:white}.dash{background:#f5faf7;border:1px solid var(--line);border-radius:27px;padding:22px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:15px 0}.kpi{background:white;border:1px solid var(--line);border-radius:16px;padding:15px}.kpi small{color:var(--muted)}.kpi b{display:block;color:var(--g);font-size:23px}.dashGrid{display:grid;grid-template-columns:1.4fr .8fr;gap:15px}.chart,.ranking{background:white;border:1px solid var(--line);border-radius:18px;padding:18px}.bars{height:170px;display:flex;align-items:end;gap:13px;margin-top:12px}.bar{flex:1;background:linear-gradient(#59c89c,var(--g));border-radius:8px 8px 2px 2px}.rank{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}
+.addOffer{background:#f3faf6}.addGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.upload{border:2px dashed #b9d6ca;border-radius:18px;min-height:220px;display:grid;place-items:center;background:white;text-align:center;color:var(--muted)}
+.cta{padding-top:20px}.ctaBox{background:linear-gradient(135deg,#087f5b,#12a06f);color:white;border-radius:28px;padding:38px;display:flex;justify-content:space-between;align-items:center;gap:20px}.ctaBox h2{font-size:33px}.ctaBox p{color:#d9f5e9}
+footer{background:#12332b;color:#dcebe5;padding:42px 0}.footerGrid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:25px}footer a{display:block;color:#b8cec6;text-decoration:none;margin:6px 0}.copy{border-top:1px solid #315047;margin-top:24px;padding-top:15px;color:#8da9a0}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal.show{display:flex}.modalBox{background:white;border-radius:23px;padding:27px;width:min(480px,100%);position:relative}.close{position:absolute;left:14px;top:14px;border:0;background:#eef3f0;border-radius:9px;width:34px;height:34px}.toast{position:fixed;bottom:25px;left:25px;background:#15352d;color:white;padding:13px 18px;border-radius:13px;display:none;z-index:200}
+@media(max-width:950px){.links{display:none}.heroGrid,.detailBox,.checkoutGrid,.addGrid{grid-template-columns:1fr}.offerGrid,.infoGrid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.dashGrid{grid-template-columns:1fr}}
+@media(max-width:600px){.actions{display:none}.hero{padding-top:40px}.hero p{font-size:15px}.heroArt{height:410px}.foodCard{width:275px;right:10px}.foodCard.small{width:200px}.offerGrid,.infoGrid,.steps{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.ctaBox{display:block;padding:28px}.ctaBox h2{font-size:28px;margin-bottom:10px}.footerGrid{grid-template-columns:1fr}}
+
+.factsPage{background:#f3faf6;min-height:70vh}.factsHero{background:linear-gradient(135deg,#087f5b,#12a06f);color:#fff;border-radius:28px;padding:35px;display:flex;align-items:center;justify-content:space-between;gap:25px;margin-bottom:25px}.factsHero p{color:#d9f5e9;max-width:700px}.factCircle{width:190px;height:190px;border-radius:50%;background:#fff;color:var(--g);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:50px;flex:none}.factCircle b{font-size:24px}.factCircle small{font-size:11px;color:var(--muted)}.factsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.factCard{background:#fff;border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 8px 25px #15352d08}.factCard span{display:block;color:var(--g);font-size:31px;font-weight:900;margin-bottom:7px}.factCard p{color:var(--muted);font-size:13px}.sourceNote{margin-top:18px;background:#fff8e8;border:1px solid #f4dfb4;color:#73551e;border-radius:17px;padding:17px;font-size:13px}
+
+
+/* Foodfy V4 additions */
+.countdown{display:inline-flex;align-items:center;gap:5px;background:#fff0f0;color:#c94b4b;border-radius:9px;padding:5px 9px;font-weight:900;font-size:12px}
+.mapSection{background:#fff}.mapBox{height:390px;border-radius:25px;background:linear-gradient(135deg,#dff3e8,#f8f0df);position:relative;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+.mapRoad{position:absolute;background:#fff;border:3px solid #e5dfd2;border-radius:99px;transform:rotate(-17deg)}
+.mapRoad.r1{width:120%;height:55px;top:80px;right:-70px}.mapRoad.r2{width:110%;height:45px;top:250px;left:-30px;transform:rotate(14deg)}.mapRoad.r3{width:45px;height:110%;top:-40px;left:48%;transform:rotate(25deg)}
+.pin{position:absolute;width:52px;height:52px;border-radius:50% 50% 50% 0;background:var(--g);color:#fff;display:grid;place-items:center;transform:rotate(-45deg);box-shadow:0 8px 20px #15352d33}.pin span{transform:rotate(45deg)}.pin.p1{right:20%;top:22%}.pin.p2{left:27%;top:52%;background:var(--orange)}.pin.p3{right:46%;bottom:13%}.mapLegend{position:absolute;right:18px;bottom:18px;background:#fff;border-radius:16px;padding:13px;box-shadow:var(--shadow);font-size:13px}.mapLegend b{color:var(--g)}
+.impact{background:#f3faf6}.impactHero{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;background:linear-gradient(135deg,#087f5b,#12a06f);color:#fff;padding:35px;border-radius:28px}.impactHero p{color:#d9f5e9}.impactStats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.impactStat{background:#ffffff18;border:1px solid #ffffff30;border-radius:17px;padding:17px}.impactStat b{display:block;font-size:27px}.impactStat small{color:#d9f5e9}
+.pointsCard{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px}.pointsProgress{height:12px;background:#e8efec;border-radius:99px;overflow:hidden;margin:13px 0}.pointsProgress i{display:block;height:100%;width:72%;background:var(--g);border-radius:99px}.restaurantGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}.restaurantProfile{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px}.restaurantCover{height:130px;border-radius:17px;background:linear-gradient(135deg,#ffd59b,#f38a4c);display:grid;place-items:center;font-size:75px;margin-bottom:15px}.stars{color:#f5a623;letter-spacing:2px}.review{border-top:1px solid var(--line);padding:13px 0}.review small{color:var(--muted)}
+.expiring{background:#fff6f0;color:#9b551c;border:1px solid #f4d6bd;border-radius:13px;padding:10px;font-size:13px;margin-top:12px}
+.notificationPanel{position:fixed;top:82px;left:20px;width:320px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px;z-index:80;display:none}.notificationPanel.show{display:block}.notification{padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}.notification:last-child{border-bottom:0}.notification b{display:block}.badgeCount{position:absolute;background:var(--danger);color:#fff;border-radius:50%;font-size:10px;min-width:18px;height:18px;display:grid;place-items:center;top:-4px;right:-4px}
+@media(max-width:800px){.impactHero,.restaurantGrid{grid-template-columns:1fr}.impactStats{grid-template-columns:1fr 1fr}.notificationPanel{left:10px;right:10px;width:auto}}
+
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="container navin">
+  <a href="#" class="logo" onclick="showPage('home');return false">Foodfy</a>
+  <ul class="links">
+    <li><a href="#" onclick="showPage('home');return false">الرئيسية</a></li>
+    <li><a href="#" onclick="showPage('offers');return false">العروض</a></li>
+    <li><a href="#" onclick="showPage('orders');return false">طلباتي</a></li>
+    <li><a href="#" onclick="showPage('restaurant');return false">للمطاعم</a></li><li><a href="#" onclick="showPage('facts');return false">حقائق وأرقام</a></li><li><a href="#" onclick="showPage('impact');return false">Impact 🌱</a></li>
+  </ul>
+  <div class="navright"><div style="position:relative"><button class="iconbtn" onclick="toggleNotifications()">🔔<span class="badgeCount">3</span></button></div><button class="btn secondary" onclick="openModal('login')">دخول</button><button class="btn primary" onclick="openModal('register')">حساب جديد</button></div>
+</div></nav>
+
+<main id="homePage">
+<section class="hero"><div class="container heroGrid">
+<div><span class="tag">♻️ أكل مفيد.. هدر أقل</span><h1>أكل أكتر،<br><span>بسعر أوفر.</span></h1><p>Foodfy منصة تربطك بالمطاعم التي لديها وجبات فائضة صالحة للبيع. اشتري بجودة جيدة وسعر مخفض، وساعد المطعم على تحقيق دخل بدل هدر الطعام.</p><div class="heroBtns"><button class="btn primary" onclick="showPage('offers')">🍽️ اكتشف العروض</button><button class="btn secondary" onclick="showPage('restaurant')">🏪 أنا مطعم</button></div><div class="stats"><div><b>خصومات</b><small>على الوجبات</small></div><div><b>قريب منك</b><small>حسب الموقع</small></div><div><b>استلام سهل</b><small>من المطعم</small></div></div></div>
+<div class="heroArt"><div class="blob"></div><div class="foodCard"><div class="foodImg">🍗</div><div class="row"><div><b>وجبة دجاج مشوية</b><div class="muted">📍 مطعم البيت • 0.8 كم</div></div><span class="discount">خصم 45%</span></div><div class="row" style="margin-top:10px"><span class="old">150 ج.م</span><span class="price">82 ج.م</span></div></div><div class="foodCard small"><div class="foodImg">🍕</div><b>بيتزا متنوعة</b><div class="row"><span class="old">180 ج.م</span><span class="price">99 ج.م</span></div></div></div>
+</div></section>
+
+<section><div class="container"><div class="head"><span class="tag">لماذا Foodfy؟</span><h2>مشكلة واحدة.. وحل يفيد الجميع</h2><p>نحوّل الطعام الفائض من تكلفة ضائعة إلى فرصة للمطعم والعميل.</p></div><div class="infoGrid"><div class="info"><div class="icon">🍴</div><h3>للمطعم</h3><p>بيع الطعام الفائض وتحقيق دخل إضافي بدل التخلص منه.</p></div><div class="info"><div class="icon">💰</div><h3>للعميل</h3><p>الحصول على وجبات جيدة بأسعار أقل من السعر المعتاد.</p></div><div class="info"><div class="icon">🌱</div><h3>للمجتمع</h3><p>المساهمة في تقليل هدر الطعام والاستفادة من الموارد.</p></div></div></div></section>
+
+<section style="background:#fff"><div class="container"><div class="head"><span class="tag">ببساطة</span><h2>كيف تعمل المنصة؟</h2></div><div class="steps"><div class="step"><span class="num">1</span><div class="big">🏪</div><h3>المطعم ينشر العرض</h3><p>الوجبة والسعر والكمية ووقت الاستلام.</p></div><div class="step"><span class="num">2</span><div class="big">🔎</div><h3>العميل يكتشف</h3><p>يشاهد العروض القريبة ويقارن الخصومات.</p></div><div class="step"><span class="num">3</span><div class="big">🛒</div><h3>يطلب ويدفع</h3><p>يختار الكمية ويؤكد الطلب.</p></div><div class="step"><span class="num">4</span><div class="big">📦</div><h3>يستلم</h3><p>يذهب للمطعم ويؤكد الاستلام.</p></div></div></div></section>
+
+<section style="background:#fff">
+<div class="container">
+  <div class="head"><span class="tag">Foodfy Features</span><h2>كل اللي تحتاجه في مكان واحد</h2></div>
+  <div class="infoGrid">
+    <div class="info" onclick="showPage('map')" style="cursor:pointer"><div class="icon">📍</div><h3>الخريطة</h3><p>اعرف العروض الأقرب ليك بسرعة.</p></div>
+    <div class="info" onclick="showPage('points')" style="cursor:pointer"><div class="icon">🎁</div><h3>Foodfy Points</h3><p>اجمع نقاط واحصل على خصومات.</p></div>
+    <div class="info" onclick="showPage('impact')" style="cursor:pointer"><div class="icon">🌱</div><h3>Impact</h3><p>شوف تأثير كل عملية شراء في تقليل الهدر.</p></div>
+  </div>
+</div>
+</section>
+
+</main>
+
+<section id="offersPage" class="offers hidden"><div class="container"><div class="head"><span class="tag">Marketplace</span><h2>اكتشف العروض القريبة</h2><p>اختار وجبتك، شوف الخصم، واحجزها قبل انتهاء وقت الاستلام.</p></div><div class="toolbar"><input class="search" id="search" placeholder="🔍 ابحث عن وجبة أو مطعم..." oninput="filterOffers()"><div class="filters"><button class="filter active" onclick="setFilter(this,'all')">الكل</button><button class="filter" onclick="setFilter(this,'meal')">وجبات</button><button class="filter" onclick="setFilter(this,'pizza')">بيتزا</button><button class="filter" onclick="setFilter(this,'dessert')">حلويات</button></div></div><div class="offerGrid" id="offerGrid">
+<div class="offer" data-type="meal" data-name="وجبة دجاج مشوية مطعم البيت"><div class="offerImg a"><span class="discount">خصم 45%</span>🍗</div><div class="offerBody"><h3>وجبة دجاج مشوية</h3><p>مطعم البيت • 0.8 كم • متبقي 6</p><div class="offerMeta"><span class="old">150 ج.م</span><span class="price">82 ج.م</span></div><div class="offerBottom"><span>⏰ 8 - 10 م</span><span class="countdown" data-seconds="3600">59:59</span><button class="btn primary" onclick="openDetails('وجبة دجاج مشوية','82','150','🍗','45%','مطعم البيت')">التفاصيل</button></div></div></div>
+<div class="offer" data-type="pizza" data-name="بيتزا مشكلة نابولي"><div class="offerImg b"><span class="discount">خصم 40%</span>🍕</div><div class="offerBody"><h3>بيتزا مشكلة</h3><p>نابولي • 1.2 كم • متبقي 4</p><div class="offerMeta"><span class="old">180 ج.م</span><span class="price">108 ج.م</span></div><div class="offerBottom"><span>⏰ 9 - 11 م</span><span class="countdown" data-seconds="5400">89:59</span><button class="btn primary" onclick="openDetails('بيتزا مشكلة','108','180','🍕','40%','نابولي')">التفاصيل</button></div></div></div>
+<div class="offer" data-type="dessert" data-name="بوكس حلويات سكر"><div class="offerImg c"><span class="discount">خصم 50%</span>🧁</div><div class="offerBody"><h3>بوكس حلويات</h3><p>سكر • 0.6 كم • متبقي 8</p><div class="offerMeta"><span class="old">120 ج.م</span><span class="price">60 ج.م</span></div><div class="offerBottom"><span>⏰ 7:30 - 9:30 م</span><button class="btn primary" onclick="openDetails('بوكس حلويات','60','120','🧁','50%','سكر')">التفاصيل</button></div></div></div>
+</div></div></section>
+
+<section id="detailsPage" class="detail hidden"><div class="container"><button class="btn secondary" onclick="showPage('offers')">← رجوع للعروض</button><div class="detailBox" style="margin-top:18px"><div class="detailImg" id="detailEmoji">🍗</div><div class="detailInfo"><span class="discount" id="detailDiscount">خصم 45%</span><h2 id="detailName">وجبة دجاج</h2><p id="detailRestaurant">مطعم البيت</p><p style="margin-top:12px;color:var(--muted)">وجبة فائضة متاحة للاستلام خلال الوقت المحدد. العرض متاح بكمية محدودة.</p><div class="row" style="margin-top:18px"><span class="old" id="detailOld">150 ج.م</span><span class="bigprice" id="detailPrice">82 ج.م</span></div><div class="qty"><button onclick="changeQty(-1)">−</button><span id="qty">1</span><button onclick="changeQty(1)">+</button><span style="color:var(--muted)">الكمية</span></div><button class="btn primary" style="width:100%" onclick="addToCart()">🛒 أضف للسلة</button><button class="btn secondary" style="width:100%;margin-top:9px" onclick="toast('❤️ تمت الإضافة للمفضلة')">♡ إضافة للمفضلة</button></div></div></div></section>
+
+<section id="checkoutPage" class="checkout hidden"><div class="container"><div class="head"><span class="tag">Checkout</span><h2>تأكيد الطلب</h2></div><div class="checkoutGrid"><div class="panel"><h3>بيانات الاستلام</h3><div class="form"><input id="customerName" placeholder="الاسم الكامل"><input id="phone" placeholder="رقم الهاتف"><select><option>طريقة الدفع عند الاستلام</option><option>دفع إلكتروني (Prototype)</option></select><textarea placeholder="ملاحظات للمطعم"></textarea></div></div><div class="panel"><h3>ملخص الطلب</h3><div class="summaryLine"><span id="sumName">وجبة دجاج</span><b id="sumPrice">82 ج.م</b></div><div class="summaryLine"><span>رسوم الخدمة</span><b>5 ج.م</b></div><div class="summaryLine"><span>الإجمالي</span><b class="price" id="total">87 ج.م</b></div><button class="btn primary" style="width:100%;margin-top:15px" onclick="confirmOrder()">تأكيد وحجز الطلب</button></div></div></div></section>
+
+<section id="ordersPage" class="orders hidden"><div class="container"><div class="head"><span class="tag">My Orders</span><h2>طلباتي</h2><p>تابع حالة طلبك حتى الاستلام.</p></div><div class="orderCard"><div class="row"><div><h3 id="orderName">وجبة دجاج مشوية</h3><span class="muted">#WF-2026-001</span></div><span class="status" id="orderStatus">جاهز للاستلام ✓</span></div><div class="timeline"><div class="tl done"><i>✓</i>تم الطلب</div><div class="tl done"><i>✓</i>تم التأكيد</div><div class="tl done"><i>✓</i>جاهز</div><div class="tl"><i>4</i>تم الاستلام</div></div><div class="row"><span>📍 مطعم البيت</span><button class="btn primary" onclick="toast('📱 QR Code: WF-2026-001')">عرض QR للاستلام</button></div></div></div></section>
+
+
+<section id="factsPage" class="factsPage hidden">
+  <div class="container">
+    <div class="head">
+      <span class="tag">📊 Food Waste Insights</span>
+      <h2>ليه Foodfy مهم؟</h2>
+      <p>المعلومات التالية مضافة من الملاحظات التي أرسلتها، وتظهر داخل الموقع بشكل مبسط يفهمه العميل.</p>
+    </div>
+
+    <div class="factsHero">
+      <div>
+        <span class="tag">معلومة سريعة</span>
+        <h2>نحوّل الطعام المهدر إلى قيمة</h2>
+        <p>
+          Foodfy يساعد المطاعم على بيع الطعام الفائض الصالح للبيع بدل التخلص منه،
+          ويساعد العملاء على الحصول على وجبات بأسعار أقل.
+        </p>
+      </div>
+      <div class="factCircle">♻️<b>Foodfy</b><small>أكل أكثر • هدر أقل</small></div>
+    </div>
+
+    <div class="factsGrid">
+      <div class="factCard"><span>15%</span><h3>هدر الطعام في المطاعم</h3><p>نسبة مذكورة في الملاحظات المرفقة عن هدر الطعام في المطاعم.</p></div>
+      <div class="factCard"><span>40%</span><h3>الخضار والفواكه</h3><p>نسبة مذكورة للخضار والفواكه ضمن بيانات الهدر في الملاحظات.</p></div>
+      <div class="factCard"><span>30%</span><h3>الأسماك</h3><p>نسبة مذكورة للأسماك ضمن بيانات الهدر في الملاحظات.</p></div>
+      <div class="factCard"><span>9 مليون طن</span><h3>إجمالي الهدر في مصر</h3><p>الرقم السنوي المذكور في الملاحظات المرفقة.</p></div>
+      <div class="factCard"><span>30 مليار ج.م</span><h3>قيمة اقتصادية سنوية</h3><p>قيمة مذكورة في الملاحظات مرتبطة بحجم الهدر.</p></div>
+      <div class="factCard"><span>60%</span><h3>نسبة إضافية مذكورة</h3><p>النسبة مكتوبة في الملاحظات ضمن بيانات الهدر، وتحتاج إلى تحديد مصدرها/تعريفها قبل استخدامها كرقم رسمي.</p></div>
+    </div>
+
+    <div class="sourceNote">
+      <b>ملاحظة مهمة:</b>
+      الأرقام هنا معروضة كما وردت في الملاحظات التي أرسلتها، وليست ادعاءً بأن Foodfy قام بالتحقق منها.
+      قبل العرض الرسمي على العميل، يُفضّل إضافة مصدر واضح لكل رقم.
+    </div>
+  </div>
+</section>
+
+
+<section id="mapPage" class="mapSection hidden">
+  <div class="container">
+    <div class="head"><span class="tag">📍 Nearby</span><h2>العروض القريبة منك</h2><p>اختار أقرب عرض بدل ما تضيع وقت في البحث.</p></div>
+    <div class="mapBox">
+      <div class="mapRoad r1"></div><div class="mapRoad r2"></div><div class="mapRoad r3"></div>
+      <div class="pin p1"><span>🍗</span></div><div class="pin p2"><span>🍕</span></div><div class="pin p3"><span>🧁</span></div>
+      <div class="mapLegend"><b>● Foodfy</b><br>3 مطاعم قريبة • 0.6 - 1.5 كم</div>
+    </div>
+  </div>
+</section>
+
+<section id="impactPage" class="impact hidden">
+  <div class="container">
+    <div class="head"><span class="tag">🌱 Foodfy Impact</span><h2>كل طلب له أثر</h2><p>صفحة توضح للعميل القيمة الاجتماعية والبيئية للمشروع.</p></div>
+    <div class="impactHero">
+      <div><h2>نساعد المطاعم والعملاء يقللوا هدر الطعام.</h2><p>الأرقام التالية نموذج تجريبي للـPrototype وليست إحصائيات رسمية.</p></div>
+      <div class="impactStats">
+        <div class="impactStat"><b>1,250</b><small>وجبة تم إنقاذها</small></div>
+        <div class="impactStat"><b>540 كجم</b><small>طعام تم تقليل هدره</small></div>
+        <div class="impactStat"><b>320</b><small>عميل مستفيد</small></div>
+        <div class="impactStat"><b>45</b><small>مطعم مشارك</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="restaurantDetailsPage" class="hidden">
+  <div class="container">
+    <div class="head"><span class="tag">🏪 Restaurant</span><h2>مطعم البيت</h2><p>وجبات يومية وعروض Foodfy القريبة منك.</p></div>
+    <div class="restaurantGrid">
+      <div class="restaurantProfile"><div class="restaurantCover">🍽️</div><div class="row"><div><h2>مطعم البيت</h2><span class="muted">📍 0.8 كم • مفتوح الآن</span></div><span class="stars">★★★★★</span></div><p style="color:var(--muted);margin:12px 0">مطعم محلي يشارك الوجبات الفائضة الصالحة للبيع بأسعار مخفضة.</p><button class="btn primary" onclick="showPage('offers')">عرض الوجبات المتاحة</button></div>
+      <div class="restaurantProfile"><h3>⭐ تقييمات العملاء</h3><div class="review"><b>أحمد</b> <span class="stars">★★★★★</span><br><small>الوجبة ممتازة والسعر مناسب جدًا.</small></div><div class="review"><b>سارة</b> <span class="stars">★★★★☆</span><br><small>تجربة جميلة والاستلام كان سريع.</small></div><div class="review"><b>محمد</b> <span class="stars">★★★★★</span><br><small>فكرة ممتازة وهكرر التجربة.</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pointsPage" class="hidden">
+  <div class="container">
+    <div class="head"><span class="tag">🎁 Foodfy Points</span><h2>اجمع نقاطك وخد خصومات</h2><p>نظام ولاء بسيط يحفز العميل على تكرار الشراء.</p></div>
+    <div class="pointsCard"><div class="row"><div><h3>رصيدك الحالي</h3><b class="price" style="font-size:32px">720 نقطة</b></div><span class="discount">المستوى: Silver</span></div><div class="pointsProgress"><i></i></div><div class="row"><small class="muted">720 / 1000 للوصول إلى Gold</small><button class="btn primary" onclick="toast('🎁 أقرب مكافأة: خصم 20 جنيه')">استبدال النقاط</button></div></div>
+  </div>
+</section>
+
+<section id="restaurantPage" class="dashSection hidden"><div class="container"><div class="head"><span class="tag">Restaurant Dashboard</span><h2>لوحة تحكم المطعم</h2><p>إدارة العروض والطلبات والمبيعات من مكان واحد.</p></div><div class="dash"><div class="row"><h3>📊 ملخص اليوم</h3><button class="btn primary" onclick="showPage('addOffer')">+ إضافة عرض</button></div><div class="kpis"><div class="kpi"><small>العروض المباعة</small><b>38</b></div><div class="kpi"><small>الإيرادات</small><b>3,240 ج.م</b></div><div class="kpi"><small>الطلبات</small><b>41</b></div><div class="kpi"><small>تم إنقاذه</small><b>52 كجم</b></div></div><div class="dashGrid"><div class="chart"><h3>المبيعات خلال الأسبوع</h3><div class="bars"><i class="bar" style="height:45%"></i><i class="bar" style="height:62%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:78%"></i><i class="bar" style="height:68%"></i><i class="bar" style="height:92%"></i><i class="bar" style="height:82%"></i></div></div><div class="ranking"><h3>🔥 الأكثر مبيعًا</h3><div class="rank"><span>🍗 وجبة دجاج</span><b>18</b></div><div class="rank"><span>🍕 بيتزا</span><b>12</b></div><div class="rank"><span>🧁 حلويات</span><b>8</b></div></div></div></div></div></section>
+
+<section id="addOfferPage" class="addOffer hidden"><div class="container"><div class="head"><span class="tag">Restaurant</span><h2>إضافة عرض جديد</h2><p>انشر الطعام الفائض للعملاء القريبين.</p></div><div class="addGrid"><div class="upload">📷<br><b>ارفع صورة الوجبة</b><br><small>PNG / JPG</small></div><div class="panel"><div class="form"><input placeholder="اسم الوجبة"><input placeholder="السعر الأصلي"><input placeholder="سعر العرض"><input placeholder="الكمية المتاحة"><input placeholder="وقت بداية الاستلام"><input placeholder="وقت نهاية الاستلام"><button class="btn primary" onclick="toast('✅ تم نشر العرض بنجاح');showPage('restaurant')">نشر العرض</button></div></div></div></div></section>
+
+<section><div class="container"><div class="ctaBox"><div><h2>عندك أكل فائض؟</h2><p>حوّله لفرصة جديدة مع Foodfy.</p></div><button class="btn secondary" onclick="showPage('restaurant')">سجّل مطعمك ←</button></div></div></section>
+
+<footer><div class="container"><div class="footerGrid"><div><div class="logo" style="color:white">Foodfy</div><p>أكل أكثر، هدر أقل — Marketplace للطعام الفائض.</p></div><div><h3>العميل</h3><a href="#" onclick="showPage('offers');return false">العروض</a><a href="#" onclick="showPage('orders');return false">طلباتي</a><a href="#" onclick="toast('❤️ المفضلة قيد التطوير')">المفضلة</a></div><div><h3>المطعم</h3><a href="#" onclick="showPage('restaurant');return false">Dashboard</a><a href="#" onclick="showPage('addOffer');return false">إضافة عرض</a></div></div><div class="copy">© 2026 Foodfy — Full UI/UX Prototype • Foodfy</div></div></footer>
+
+<div class="modal" id="modal"><div class="modalBox"><button class="close" onclick="closeModal()">×</button><h2 id="modalTitle">تسجيل الدخول</h2><p id="modalText" style="color:var(--muted)"></p><div class="form"><input placeholder="البريد الإلكتروني"><input type="password" placeholder="كلمة المرور"><button class="btn primary" onclick="closeModal();toast('✅ تم تسجيل الدخول (Prototype)')">متابعة</button></div></div></div>
+
+<div class="notificationPanel" id="notificationPanel">
+  <h3>🔔 الإشعارات</h3>
+  <div class="notification"><b>🔥 عرض ينتهي قريبًا</b>بيتزا نابولي متبقي منها 2 فقط.</div>
+  <div class="notification"><b>📦 طلبك جاهز</b>اطلب #WF-2026-001 جاهز للاستلام.</div>
+  <div class="notification"><b>🎁 نقاط جديدة</b>حصلت على +10 Foodfy Points.</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let current='all',qty=1,cart={name:'وجبة دجاج مشوية',price:82};
+const pages=['home','offers','details','checkout','orders','restaurant','addOffer','facts','map','impact','restaurantDetails','points'];
+function showPage(page){
+  document.getElementById('homePage').classList.toggle('hidden',page!=='home');
+  pages.filter(x=>x!=='home').forEach(x=>document.getElementById(x+'Page').classList.toggle('hidden',x!==page));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setFilter(btn,type){document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));btn.classList.add('active');current=type;filterOffers()}
+function filterOffers(){let q=(document.getElementById('search').value||'').toLowerCase();document.querySelectorAll('.offer').forEach(x=>x.style.display=((current==='all'||x.dataset.type===current)&&x.dataset.name.toLowerCase().includes(q))?'block':'none')}
+function openDetails(name,price,old,emoji,discount,restaurant){cart={name,price:Number(price)};qty=1;document.getElementById('detailName').textContent=name;document.getElementById('detailPrice').textContent=price+' ج.م';document.getElementById('detailOld').textContent=old+' ج.م';document.getElementById('detailEmoji').textContent=emoji;document.getElementById('detailDiscount').textContent='خصم '+discount;document.getElementById('detailRestaurant').textContent=restaurant+' • 📍 قريب منك';document.getElementById('qty').textContent=qty;showPage('details')}
+function changeQty(n){qty=Math.max(1,qty+n);document.getElementById('qty').textContent=qty}
+function addToCart(){document.getElementById('sumName').textContent=cart.name+' × '+qty;document.getElementById('sumPrice').textContent=(cart.price*qty)+' ج.م';document.getElementById('total').textContent=(cart.price*qty+5)+' ج.م';showPage('checkout')}
+function confirmOrder(){document.getElementById('orderName').textContent=cart.name;document.getElementById('orderStatus').textContent='جاهز للاستلام ✓';showPage('orders');toast('🎉 تم حجز الطلب بنجاح')}
+function openModal(type){document.getElementById('modalTitle').textContent=type==='register'?'إنشاء حساب':type==='restaurant'?'انضم كمطعم':'تسجيل الدخول';document.getElementById('modalText').textContent=type==='restaurant'?'ابدأ بنشر عروض الطعام الفائض والوصول لعملاء قريبين منك.':'أنشئ حسابك للوصول إلى جميع خصائص Foodfy.';document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function toast(text){let t=document.getElementById('toast');t.textContent=text;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',2600)}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+
+function toggleNotifications(){document.getElementById('notificationPanel').classList.toggle('show')}
+function startCountdowns(){
+  document.querySelectorAll('.countdown').forEach(el=>{
+    let sec=Number(el.dataset.seconds)||3600;
+    setInterval(()=>{sec=Math.max(0,sec-1);let m=Math.floor(sec/60),s=sec%60;el.textContent=`${m}:${String(s).padStart(2,'0')}`},1000);
+  });
+}
+startCountdowns();
+
+</script>
+</body>
+</html>
