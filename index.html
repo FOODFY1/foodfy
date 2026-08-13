@@ -329,6 +329,7 @@ async function submitAuth(){
     const {data,error}=await foodfySupabase.auth.signInWithPassword({email,password});
     if(error){ setAuthMessage('❌ البريد أو كلمة المرور غير صحيحة.'); return; }
     setAuthMessage('✅ تم تسجيل الدخول بنجاح.', true);
+    updateLoginButtons(true, email);
     setTimeout(closeModal,600);
   }
 }
@@ -339,29 +340,30 @@ async function logoutUser(){
   closeModal();
 }
 
+
+function updateLoginButtons(isLoggedIn, email=''){
+  document.querySelectorAll('button').forEach(btn=>{
+    const txt = btn.textContent.trim();
+    const onclick = btn.getAttribute('onclick') || '';
+    if (onclick.includes("openModal('login')") || txt === 'دخول' || txt === 'حسابي') {
+      btn.textContent = isLoggedIn ? 'حسابي' : 'دخول';
+    }
+  });
+}
+
 async function refreshAuthUI(){
   if(!foodfySupabase) return;
-  const {data:{session}}=await foodfySupabase.auth.getSession();
-  const loggedIn=!!session;
-  document.getElementById('authLogout').style.display=loggedIn?'block':'none';
-  if(loggedIn){
-    const user=session.user;
-    const displayName=user.user_metadata?.full_name || user.email || 'حسابي';
-    // Change visible login button text when available.
-    document.querySelectorAll('button').forEach(btn=>{
-      if(btn.textContent.trim()==='دخول') btn.textContent='حسابي';
-    });
-  }
+
+  const {data:{session}} = await foodfySupabase.auth.getSession();
+  updateLoginButtons(!!session, session?.user?.email || '');
+
   foodfySupabase.auth.onAuthStateChange((_event, newSession)=>{
-    const isIn=!!newSession;
-    document.querySelectorAll('button').forEach(btn=>{
-      if(btn.textContent.trim()==='دخول' || btn.textContent.trim()==='حسابي')
-        btn.textContent=isIn?'حسابي':'دخول';
-    });
+    updateLoginButtons(!!newSession, newSession?.user?.email || '');
   });
 }
 
 if(window.supabase) refreshAuthUI();
+
 
 document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
 
@@ -376,5 +378,23 @@ function startCountdowns(){
 startCountdowns();
 
 </script>
+
+<div class="modal" id="profileModal">
+  <div class="modalBox">
+    <button class="close" onclick="closeProfile()">×</button>
+    <h2>👤 حسابي</h2>
+    <p style="color:var(--muted)">بيانات حسابك في Foodfy</p>
+
+    <div class="form">
+      <input id="profileName" placeholder="الاسم" autocomplete="name">
+      <input id="profileEmail" type="email" placeholder="البريد الإلكتروني" readonly>
+      <input id="profilePhone" placeholder="رقم الهاتف" autocomplete="tel">
+      <button class="btn primary" onclick="saveProfile()">حفظ البيانات</button>
+      <button class="btn secondary" onclick="logoutFromProfile()">تسجيل الخروج</button>
+      <div id="profileMessage" style="font-size:14px;color:var(--muted);margin-top:5px"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
