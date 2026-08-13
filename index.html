@@ -377,6 +377,75 @@ function startCountdowns(){
 }
 startCountdowns();
 
+
+/* =========================
+   Foodfy Account / Profile
+   ========================= */
+function openProfile(){
+  if(!foodfySupabase){
+    toast('⚠️ Supabase غير متصل');
+    return;
+  }
+  foodfySupabase.auth.getSession().then(({data:{session}})=>{
+    if(!session){
+      openModal('login');
+      return;
+    }
+    const user = session.user;
+    document.getElementById('profileEmail').value = user.email || '';
+    document.getElementById('profileName').value = user.user_metadata?.full_name || '';
+    document.getElementById('profilePhone').value = user.user_metadata?.phone || '';
+    document.getElementById('profileMessage').textContent = '';
+    document.getElementById('profileModal').classList.add('show');
+  });
+}
+
+function closeProfile(){
+  const el = document.getElementById('profileModal');
+  if(el) el.classList.remove('show');
+}
+
+async function saveProfile(){
+  if(!foodfySupabase) return;
+  const full_name = document.getElementById('profileName').value.trim();
+  const phone = document.getElementById('profilePhone').value.trim();
+
+  const {error} = await foodfySupabase.auth.updateUser({
+    data:{ full_name, phone }
+  });
+
+  const msg = document.getElementById('profileMessage');
+  if(error){
+    msg.textContent = '❌ تعذر حفظ البيانات: ' + error.message;
+    msg.style.color = 'var(--danger)';
+    return;
+  }
+
+  msg.textContent = '✅ تم حفظ بياناتك بنجاح';
+  msg.style.color = 'var(--g)';
+  setTimeout(closeProfile, 700);
+}
+
+async function logoutFromProfile(){
+  if(foodfySupabase) await foodfySupabase.auth.signOut();
+  updateLoginButtons(false);
+  closeProfile();
+  toast('تم تسجيل الخروج');
+}
+
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  if(btn.textContent.trim() === 'حسابي'){
+    e.preventDefault();
+    openProfile();
+  }
+});
+
+document.addEventListener('click', (e)=>{
+  if(e.target.id === 'profileModal') closeProfile();
+});
+
 </script>
 
 <div class="modal" id="profileModal">
