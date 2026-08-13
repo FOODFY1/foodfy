@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y58Y40WJR3"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-Y58Y40WJR3');
-</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,6 +59,17 @@ footer{background:#12332b;color:#dcebe5;padding:42px 0}.footerGrid{display:grid;
 @media(max-width:800px){.impactHero,.restaurantGrid{grid-template-columns:1fr}.impactStats{grid-template-columns:1fr 1fr}.notificationPanel{left:10px;right:10px;width:auto}}
 
 </style>
+
+<!-- Foodfy: Supabase + Google Analytics -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Y58Y40WJR3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-Y58Y40WJR3');
+</script>
+
 </head>
 <body>
 
@@ -207,7 +209,25 @@ footer{background:#12332b;color:#dcebe5;padding:42px 0}.footerGrid{display:grid;
 
 <footer><div class="container"><div class="footerGrid"><div><div class="logo" style="color:white">Foodfy</div><p>أكل أكثر، هدر أقل — Marketplace للطعام الفائض.</p></div><div><h3>العميل</h3><a href="#" onclick="showPage('offers');return false">العروض</a><a href="#" onclick="showPage('orders');return false">طلباتي</a><a href="#" onclick="toast('❤️ المفضلة قيد التطوير')">المفضلة</a></div><div><h3>المطعم</h3><a href="#" onclick="showPage('restaurant');return false">Dashboard</a><a href="#" onclick="showPage('addOffer');return false">إضافة عرض</a></div></div><div class="copy">© 2026 Foodfy — Full UI/UX Prototype • Foodfy</div></div></footer>
 
-<div class="modal" id="modal"><div class="modalBox"><button class="close" onclick="closeModal()">×</button><h2 id="modalTitle">تسجيل الدخول</h2><p id="modalText" style="color:var(--muted)"></p><div class="form"><input placeholder="البريد الإلكتروني"><input type="password" placeholder="كلمة المرور"><button class="btn primary" onclick="closeModal();toast('✅ تم تسجيل الدخول (Prototype)')">متابعة</button></div></div></div>
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="close" onclick="closeModal()">×</button>
+    <h2 id="modalTitle">تسجيل الدخول</h2>
+    <p id="modalText" style="color:var(--muted)">ادخل إلى حسابك في Foodfy.</p>
+
+    <div class="form" id="authForm">
+      <input id="authName" placeholder="الاسم" autocomplete="name">
+      <input id="authEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="email" required>
+      <input id="authPhone" placeholder="رقم الهاتف" autocomplete="tel">
+      <input id="authPassword" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
+      <input id="authPassword2" type="password" placeholder="تأكيد كلمة المرور" autocomplete="new-password">
+      <button class="btn primary" id="authSubmit" onclick="submitAuth()">متابعة</button>
+      <button class="btn secondary" id="authSwitch" onclick="switchAuthMode()">إنشاء حساب جديد</button>
+      <button class="btn secondary" id="authLogout" onclick="logoutUser()" style="display:none">تسجيل الخروج</button>
+      <div id="authMessage" style="font-size:14px;color:var(--muted);margin-top:5px"></div>
+    </div>
+  </div>
+</div>
 
 <div class="notificationPanel" id="notificationPanel">
   <h3>🔔 الإشعارات</h3>
@@ -232,10 +252,119 @@ function openDetails(name,price,old,emoji,discount,restaurant){cart={name,price:
 function changeQty(n){qty=Math.max(1,qty+n);document.getElementById('qty').textContent=qty}
 function addToCart(){document.getElementById('sumName').textContent=cart.name+' × '+qty;document.getElementById('sumPrice').textContent=(cart.price*qty)+' ج.م';document.getElementById('total').textContent=(cart.price*qty+5)+' ج.م';showPage('checkout')}
 function confirmOrder(){document.getElementById('orderName').textContent=cart.name;document.getElementById('orderStatus').textContent='جاهز للاستلام ✓';showPage('orders');toast('🎉 تم حجز الطلب بنجاح')}
-function openModal(type){document.getElementById('modalTitle').textContent=type==='register'?'إنشاء حساب':type==='restaurant'?'انضم كمطعم':'تسجيل الدخول';document.getElementById('modalText').textContent=type==='restaurant'?'ابدأ بنشر عروض الطعام الفائض والوصول لعملاء قريبين منك.':'أنشئ حسابك للوصول إلى جميع خصائص Foodfy.';document.getElementById('modal').classList.add('show')}
-function closeModal(){document.getElementById('modal').classList.remove('show')}
-function toast(text){let t=document.getElementById('toast');t.textContent=text;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',2600)}
-document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+
+/* =========================
+   Foodfy Authentication
+   =========================
+   1) Create a Supabase project.
+   2) Put your Project URL and anon/public key below.
+   3) Run the SQL file supplied with this project.
+*/
+const SUPABASE_URL = 'https://rurbcttxqkdeeymfthqv.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_hd28RyTaACC81DEhNGZuDQ_u9YKqRIm';
+const supabaseReady = !SUPABASE_URL.includes('PASTE_') && !SUPABASE_ANON_KEY.includes('PASTE_');
+const foodfySupabase = supabaseReady ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+let authMode = 'login';
+
+function openModal(type){
+  authMode = type === 'register' ? 'register' : 'login';
+  document.getElementById('modalTitle').textContent = authMode === 'register' ? 'إنشاء حساب' : 'تسجيل الدخول';
+  document.getElementById('modalText').textContent = authMode === 'register'
+    ? 'أنشئ حسابك الحقيقي في Foodfy.'
+    : 'ادخل إلى حسابك في Foodfy.';
+  document.getElementById('authName').style.display = authMode === 'register' ? 'block' : 'none';
+  document.getElementById('authPhone').style.display = authMode === 'register' ? 'block' : 'none';
+  document.getElementById('authPassword2').style.display = authMode === 'register' ? 'block' : 'none';
+  document.getElementById('authSubmit').textContent = authMode === 'register' ? 'إنشاء الحساب' : 'تسجيل الدخول';
+  document.getElementById('authSwitch').textContent = authMode === 'register' ? 'لدي حساب بالفعل' : 'إنشاء حساب جديد';
+  document.getElementById('authLogout').style.display = 'none';
+  document.getElementById('authMessage').textContent = '';
+  document.getElementById('modal').classList.add('show');
+}
+
+function switchAuthMode(){ openModal(authMode === 'register' ? 'login' : 'register'); }
+
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+function setAuthMessage(msg, ok=false){
+  const el=document.getElementById('authMessage');
+  el.textContent=msg;
+  el.style.color=ok ? 'var(--g)' : 'var(--danger)';
+}
+
+async function submitAuth(){
+  if(!supabaseReady){
+    setAuthMessage('⚠️ باقي خطوة واحدة: ضع Supabase URL و anon key في الكود.');
+    return;
+  }
+
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  if(!email || !password){ setAuthMessage('اكتب البريد الإلكتروني وكلمة المرور.'); return; }
+
+  if(authMode === 'register'){
+    const name=document.getElementById('authName').value.trim();
+    const phone=document.getElementById('authPhone').value.trim();
+    const password2=document.getElementById('authPassword2').value;
+    if(!name){ setAuthMessage('اكتب الاسم.'); return; }
+    if(password.length < 6){ setAuthMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل.'); return; }
+    if(password !== password2){ setAuthMessage('تأكيد كلمة المرور غير مطابق.'); return; }
+
+    const {data,error}=await foodfySupabase.auth.signUp({
+      email,
+      password,
+      options:{ data:{ full_name:name, phone:phone } }
+    });
+    if(error){ setAuthMessage('❌ '+error.message); return; }
+
+    setAuthMessage(
+      data.session
+        ? '✅ تم إنشاء الحساب وتسجيل الدخول.'
+        : '✅ تم إنشاء الحساب. راجع بريدك لتأكيد الحساب ثم سجل الدخول.',
+      true
+    );
+    if(data.session) setTimeout(closeModal,800);
+  } else {
+    const {data,error}=await foodfySupabase.auth.signInWithPassword({email,password});
+    if(error){ setAuthMessage('❌ البريد أو كلمة المرور غير صحيحة.'); return; }
+    setAuthMessage('✅ تم تسجيل الدخول بنجاح.', true);
+    setTimeout(closeModal,600);
+  }
+}
+
+async function logoutUser(){
+  if(foodfySupabase) await foodfySupabase.auth.signOut();
+  toast('تم تسجيل الخروج');
+  closeModal();
+}
+
+async function refreshAuthUI(){
+  if(!foodfySupabase) return;
+  const {data:{session}}=await foodfySupabase.auth.getSession();
+  const loggedIn=!!session;
+  document.getElementById('authLogout').style.display=loggedIn?'block':'none';
+  if(loggedIn){
+    const user=session.user;
+    const displayName=user.user_metadata?.full_name || user.email || 'حسابي';
+    // Change visible login button text when available.
+    document.querySelectorAll('button').forEach(btn=>{
+      if(btn.textContent.trim()==='دخول') btn.textContent='حسابي';
+    });
+  }
+  foodfySupabase.auth.onAuthStateChange((_event, newSession)=>{
+    const isIn=!!newSession;
+    document.querySelectorAll('button').forEach(btn=>{
+      if(btn.textContent.trim()==='دخول' || btn.textContent.trim()==='حسابي')
+        btn.textContent=isIn?'حسابي':'دخول';
+    });
+  });
+}
+
+if(window.supabase) refreshAuthUI();
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
 
 function toggleNotifications(){document.getElementById('notificationPanel').classList.toggle('show')}
 function startCountdowns(){
