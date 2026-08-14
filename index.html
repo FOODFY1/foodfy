@@ -75,6 +75,15 @@ footer{background:#12332b;color:#dcebe5;padding:42px 0}.footerGrid{display:grid;
 .offerTrust span{background:#eaf8ef;color:#187a43;border:1px solid #ccebd7;border-radius:999px;padding:4px 7px;font-size:10px;font-weight:800}
 .liveEmpty{padding:25px;text-align:center;background:#fff;border:1px dashed var(--line);border-radius:18px;color:var(--muted);grid-column:1/-1}
 
+
+<style>
+.verification-box{border:1px solid var(--line);background:#fff;border-radius:18px;padding:18px;margin-top:15px}
+.verification-status{display:inline-flex;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
+.status-pending{background:#fff4d6;color:#8a6500}.status-approved{background:#e7f8ee;color:#087f5b}.status-rejected{background:#fff0f0;color:#c33}
+.proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.proof-grid{grid-template-columns:1fr}}
+</style>
+
 </style>
 
 </style>
@@ -194,6 +203,9 @@ async function publishMeal(){
       foodfy_price: foodfyPrice,
       quantity: Math.floor(quantity),
       pickup_time: pickupTime,
+      expires_at: document.getElementById('mealExpiresAt')?.value ? new Date(document.getElementById('mealExpiresAt').value).toISOString() : null,
+      is_unconsumed: document.getElementById('mealUnconsumed')?.checked === true,
+      is_unsold_surplus: true,
       image_url: imageUrl,
       restaurant_name: restaurantName
     }])
@@ -309,12 +321,12 @@ if(window.supabase) {
     <li><a href="#" onclick="showPage('orders');return false">طلباتي</a></li>
     <li><a href="#" onclick="showPage('restaurant');return false">للمطاعم</a></li><li><a href="#" onclick="showPage('facts');return false">حقائق وأرقام</a></li><li><a href="#" onclick="showPage('impact');return false">Impact 🌱</a></li>
   </ul>
-  <div class="navright"><div style="position:relative"><button class="iconbtn" onclick="toggleNotifications()">🔔<span class="badgeCount">3</span></button></div><button class="btn secondary" onclick="openModal('login')">دخول</button><button class="btn primary" onclick="openModal('register')">حساب جديد</button></div>
+  <div class="navright"><div style="position:relative"><button class="iconbtn" onclick="toggleNotifications()">🔔<span class="badgeCount">3</span></button></div><button id="accountNavBtn" class="btn secondary" onclick="handleAccountNav()">دخول</button><button id="registerNavBtn" class="btn primary" onclick="openModal('register')">حساب جديد</button></div>
 </div></nav>
 
 <main id="homePage">
 <section class="hero"><div class="container heroGrid">
-<div><span class="tag">♻️ أكل مفيد.. هدر أقل</span><h1>أكل أكتر،<br><span>بسعر أوفر.</span></h1><p>Foodfy منصة تربطك بالمطاعم التي لديها وجبات فائضة صالحة للبيع. اشتري بجودة جيدة وسعر مخفض، وساعد المطعم على تحقيق دخل بدل هدر الطعام.</p><div class="heroBtns"><button class="btn primary" onclick="showPage('offers')">🍽️ اكتشف العروض</button><button class="btn secondary" onclick="showPage('restaurant')">🏪 أنا مطعم</button></div><div class="stats"><div><b>خصومات</b><small>على الوجبات</small></div><div><b>قريب منك</b><small>حسب الموقع</small></div><div><b>استلام سهل</b><small>من المطعم</small></div></div></div>
+<div><span class="tag">♻️ فائض مطاعم — غير مُباع وغير مُستهلك</span><h1>أكل فائض من المطاعم،<br><span>لم يُبع ولم يتم تناوله — بأسعار أقل.</span></h1><p>بدل ما الأكل الصالح يتترمي، Foodfy بيوصله للناس بسعر مناسب. كل وجبة معروضة هي فائض مطعم غير مُستهلك ومُجهّز للاستلام.</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin:18px 0"><span class="tag">🟢 غير مُستهلكة</span><span class="tag">🟢 فائض غير مُباع</span><span class="tag">🟢 جاهزة للاستلام</span></div><div class="heroBtns"><button class="btn primary" onclick="showPage('offers')">🍽️ اكتشف العروض</button><button class="btn secondary" onclick="showPage('restaurant')">🏪 أنا مطعم</button></div><div class="stats"><div><b>خصومات</b><small>على الوجبات</small></div><div><b>قريب منك</b><small>حسب الموقع</small></div><div><b>استلام سهل</b><small>من المطعم</small></div></div></div>
 <div class="heroArt"><div class="blob"></div><div class="foodCard"><div class="foodImg">🍗</div><div class="row"><div><b>وجبة دجاج مشوية</b><div class="muted">📍 مطعم البيت • 0.8 كم</div></div><span class="discount">خصم 45%</span></div><div class="row" style="margin-top:10px"><span class="old">150 ج.م</span><span class="price">82 ج.م</span></div></div><div class="foodCard small"><div class="foodImg">🍕</div><b>بيتزا متنوعة</b><div class="row"><span class="old">180 ج.م</span><span class="price">99 ج.م</span></div></div></div>
 </div></section>
 
@@ -331,9 +343,7 @@ if(window.supabase) {
     <div class="info" onclick="showPage('impact')" style="cursor:pointer"><div class="icon">🌱</div><h3>Impact</h3><p>شوف تأثير كل عملية شراء في تقليل الهدر.</p></div>
   </div>
 
-<div style="margin-top:12px;padding:12px;border-radius:12px;background:#fff8e6;color:#7a5a00;font-size:13px">
-  💡 النظام جاهز لحساب عمولة Foodfy، لكن الدفع الإلكتروني وتحويل مستحقات المطاعم يحتاجان ربط مزود دفع مرخّص قبل التشغيل الفعلي.
-</div>
+
 
 </div>
 </section>
@@ -341,7 +351,7 @@ if(window.supabase) {
 </main>
 
 <section id="offersPage" class="offers hidden"><div class="container"><div class="head"><span class="tag">Marketplace</span><h2>اكتشف العروض القريبة</h2><p>اختار وجبتك، شوف الخصم، واحجزها قبل انتهاء وقت الاستلام.</p></div><div class="toolbar"><input class="search" id="search" placeholder="🔍 ابحث عن وجبة أو مطعم..." oninput="filterOffers()"><div class="filters"><button class="filter active" onclick="setFilter(this,'all')">الكل</button><button class="filter" onclick="setFilter(this,'meal')">وجبات</button><button class="filter" onclick="setFilter(this,'pizza')">بيتزا</button><button class="filter" onclick="setFilter(this,'dessert')">حلويات</button></div></div><div id="liveOffersMessage" class="live-offers-note">⏳ جاري تحميل العروض المنشورة...</div><div class="offerGrid" id="offerGrid">
-<div class="offer" data-type="meal" data-name="وجبة دجاج مشوية مطعم البيت"><div class="offerImg a"><span class="discount">خصم 45%</span>🍗</div><div class="offerBody"><h3>وجبة دجاج مشوية</h3><p>مطعم البيت • 0.8 كم • متبقي 6</p><div class="offerMeta"><span class="old">150 ج.م</span><span class="price">82 ج.م</span></div><div class="offerBottom"><span>⏰ 8 - 10 م</span><span class="countdown" data-seconds="3600">59:59</span><button class="btn primary" onclick="openDetails('وجبة دجاج مشوية','82','150','🍗','45%','مطعم البيت')">التفاصيل</button></div></div></div>
+<div class="offer" data-type="meal" data-name="وجبة دجاج مشوية مطعم البيت"><div class="offerImg a"><span class="discount">خصم 45%</span>🍗</div><div class="offerBody"><h3>وجبة دجاج مشوية</h3><p>مطعم البيت • 0.8 كم • متبقي 6</p><div class="offerTrust"><span>🟢 غير مُستهلكة</span><span>🟢 فائض غير مُباع</span><span>🟢 جاهزة للاستلام</span></div><div class="offerMeta"><span class="old">150 ج.م</span><span class="price">82 ج.م</span></div><div class="offerBottom"><span>⏰ 8 - 10 م</span><span class="countdown" data-seconds="3600">59:59</span><button class="btn primary" onclick="openDetails('وجبة دجاج مشوية','82','150','🍗','45%','مطعم البيت')">التفاصيل</button></div></div></div>
 <div class="offer" data-type="pizza" data-name="بيتزا مشكلة نابولي"><div class="offerImg b"><span class="discount">خصم 40%</span>🍕</div><div class="offerBody"><h3>بيتزا مشكلة</h3><p>نابولي • 1.2 كم • متبقي 4</p><div class="offerMeta"><span class="old">180 ج.م</span><span class="price">108 ج.م</span></div><div class="offerBottom"><span>⏰ 9 - 11 م</span><span class="countdown" data-seconds="5400">89:59</span><button class="btn primary" onclick="openDetails('بيتزا مشكلة','108','180','🍕','40%','نابولي')">التفاصيل</button></div></div></div>
 <div class="offer" data-type="dessert" data-name="بوكس حلويات سكر"><div class="offerImg c"><span class="discount">خصم 50%</span>🧁</div><div class="offerBody"><h3>بوكس حلويات</h3><p>سكر • 0.6 كم • متبقي 8</p><div class="offerMeta"><span class="old">120 ج.م</span><span class="price">60 ج.م</span></div><div class="offerBottom"><span>⏰ 7:30 - 9:30 م</span><button class="btn primary" onclick="openDetails('بوكس حلويات','60','120','🧁','50%','سكر')">التفاصيل</button></div></div></div>
 </div></div></section>
@@ -349,6 +359,24 @@ if(window.supabase) {
 <section id="detailsPage" class="detail hidden"><div class="container"><button class="btn secondary" onclick="showPage('offers')">← رجوع للعروض</button><div class="detailBox" style="margin-top:18px"><div class="detailImg" id="detailEmoji">🍗</div><div class="detailInfo"><span class="discount" id="detailDiscount">خصم 45%</span><h2 id="detailName">وجبة دجاج</h2><p id="detailRestaurant">مطعم البيت</p><p style="margin-top:12px;color:var(--muted)">وجبة فائضة متاحة للاستلام خلال الوقت المحدد. العرض متاح بكمية محدودة.</p><div class="row" style="margin-top:18px"><span class="old" id="detailOld">150 ج.م</span><span class="bigprice" id="detailPrice">82 ج.م</span></div><div class="qty"><button onclick="changeQty(-1)">−</button><span id="qty">1</span><button onclick="changeQty(1)">+</button><span style="color:var(--muted)">الكمية</span></div><button class="btn primary" style="width:100%" onclick="addToCart()">🛒 أضف للسلة</button><button class="btn secondary" style="width:100%;margin-top:9px" onclick="toast('❤️ تمت الإضافة للمفضلة')">♡ إضافة للمفضلة</button></div></div></div></section>
 
 <section id="checkoutPage" class="checkout hidden"><div class="container"><div class="head"><span class="tag">Checkout</span><h2>تأكيد الطلب</h2></div><div class="checkoutGrid"><div class="panel"><h3>بيانات الاستلام</h3><div class="form"><input id="customerName" placeholder="الاسم الكامل"><input id="phone" placeholder="رقم الهاتف"><select><option>طريقة الدفع عند الاستلام</option><option>دفع إلكتروني (Prototype)</option></select><textarea placeholder="ملاحظات للمطعم"></textarea></div></div><div class="panel"><h3>ملخص الطلب</h3><div class="summaryLine"><span id="sumName">وجبة دجاج</span><b id="sumPrice">82 ج.م</b></div><div class="summaryLine"><span>رسوم الخدمة</span><b>5 ج.م</b></div><div class="summaryLine"><span>الإجمالي</span><b class="price" id="total">87 ج.م</b></div><button class="btn primary" style="width:100%;margin-top:15px" onclick="confirmOrder()">تأكيد وحجز الطلب</button></div></div></div></section>
+
+
+<section id="accountPage" class="dashSection hidden">
+  <div class="container">
+    <div class="head"><span class="tag">👤 My Account</span><h2>حسابي</h2><p>بياناتك وتأثيرك على Foodfy.</p></div>
+    <div class="panel">
+      <div class="row"><div><h3 id="accountWelcome">مرحبًا 👋</h3><p id="accountEmail" class="muted"></p></div><span class="tag">🌱 Impact</span></div>
+      <div class="kpis">
+        <div class="kpi"><small>الوجبات التي ساعدت في إنقاذها</small><b id="userSavedMeals">0</b></div>
+        <div class="kpi"><small>Foodfy Points</small><b id="userPoints">0</b></div>
+        <div class="kpi"><small>الطلبات المكتملة</small><b id="userOrders">0</b></div>
+        <div class="kpi"><small>Impact Score</small><b id="userImpact">0</b></div>
+      </div>
+      <button class="btn secondary" onclick="openProfile()">تعديل بيانات الحساب</button>
+      <button class="btn danger" onclick="logoutFromProfile()">تسجيل الخروج</button>
+    </div>
+  </div>
+</section>
 
 <section id="ordersPage" class="orders hidden"><div class="container"><div class="head"><span class="tag">My Orders</span><h2>طلباتي</h2><p>تابع حالة طلبك حتى الاستلام.</p></div><div class="orderCard"><div class="row"><div><h3 id="orderName">وجبة دجاج مشوية</h3><span class="muted">#WF-2026-001</span></div><span class="status" id="orderStatus">جاهز للاستلام ✓</span></div><div class="timeline"><div class="tl done"><i>✓</i>تم الطلب</div><div class="tl done"><i>✓</i>تم التأكيد</div><div class="tl done"><i>✓</i>جاهز</div><div class="tl"><i>4</i>تم الاستلام</div></div><div class="row"><span>📍 مطعم البيت</span><button class="btn primary" onclick="toast('📱 QR Code: WF-2026-001')">عرض QR للاستلام</button></div></div></div></section>
 
@@ -434,7 +462,23 @@ if(window.supabase) {
   </div>
 </section>
 
-<section id="restaurantPage" class="dashSection hidden"><div class="container"><div class="head"><span class="tag">Restaurant Dashboard</span><h2>لوحة تحكم المطعم</h2><p>إدارة العروض والطلبات والمبيعات من مكان واحد.</p></div><div class="dash"><div class="row"><h3>📊 ملخص اليوم</h3><button class="btn primary" onclick="showPage('addOffer')">+ إضافة عرض</button></div><div class="kpis"><div class="kpi"><small>العروض المباعة</small><b>38</b></div><div class="kpi"><small>الإيرادات</small><b>3,240 ج.م</b></div><div class="kpi"><small>الطلبات</small><b>41</b></div><div class="kpi"><small>تم إنقاذه</small><b>52 كجم</b></div></div><div class="dashGrid"><div class="chart"><h3>المبيعات خلال الأسبوع</h3><div class="bars"><i class="bar" style="height:45%"></i><i class="bar" style="height:62%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:78%"></i><i class="bar" style="height:68%"></i><i class="bar" style="height:92%"></i><i class="bar" style="height:82%"></i></div></div><div class="ranking"><h3>🔥 الأكثر مبيعًا</h3><div class="rank"><span>🍗 وجبة دجاج</span><b>18</b></div><div class="rank"><span>🍕 بيتزا</span><b>12</b></div><div class="rank"><span>🧁 حلويات</span><b>8</b></div></div></div></div></div></section>
+<section id="restaurantPage" class="dashSection hidden"><div class="container"><div class="head"><span class="tag">Restaurant Dashboard</span><h2>لوحة تحكم المطعم</h2><p>إدارة العروض والطلبات والمبيعات من مكان واحد.</p></div><div class="dash"><div class="row"><h3>📊 ملخص اليوم</h3><button id="restaurantAddOfferBtn" class="btn primary" onclick="showPage('addOffer')">+ إضافة عرض</button></div>
+<div id="restaurantVerificationBox" class="verification-box">
+  <div class="row"><div><b>🛡️ حالة توثيق المطعم</b><div class="muted">لا يمكن نشر العروض إلا بعد اعتماد الحساب.</div></div><span id="verificationBadge" class="verification-status status-pending">🟡 قيد المراجعة</span></div>
+  <div id="verificationForm" style="margin-top:14px">
+    <div class="proof-grid">
+      <input id="restaurantLegalName" placeholder="اسم المطعم الرسمي">
+      <input id="restaurantPhone" placeholder="رقم هاتف المطعم">
+      <input id="restaurantAddress" placeholder="العنوان بالتفصيل">
+      <input id="restaurantMaps" placeholder="رابط Google Maps (اختياري)">
+      <input id="restaurantProof" type="file" accept="image/*,.pdf">
+      <input id="restaurantFrontPhoto" type="file" accept="image/*">
+    </div>
+    <small class="muted" style="display:block;margin-top:8px">ارفع إثبات نشاط المطعم وصورة واضحة للواجهة. البيانات تُراجع قبل السماح بالنشر.</small>
+    <button class="btn secondary" style="margin-top:12px" onclick="submitRestaurantVerification()">إرسال طلب التحقق</button>
+    <div id="verificationMessage" class="muted" style="margin-top:8px"></div>
+  </div>
+</div><div class="kpis"><div class="kpi"><small>العروض المباعة</small><b>38</b></div><div class="kpi"><small>الإيرادات</small><b>3,240 ج.م</b></div><div class="kpi"><small>الطلبات</small><b>41</b></div><div class="kpi"><small>تم إنقاذه</small><b>52 كجم</b></div></div><div class="dashGrid"><div class="chart"><h3>المبيعات خلال الأسبوع</h3><div class="bars"><i class="bar" style="height:45%"></i><i class="bar" style="height:62%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:78%"></i><i class="bar" style="height:68%"></i><i class="bar" style="height:92%"></i><i class="bar" style="height:82%"></i></div></div><div class="ranking"><h3>🔥 الأكثر مبيعًا</h3><div class="rank"><span>🍗 وجبة دجاج</span><b>18</b></div><div class="rank"><span>🍕 بيتزا</span><b>12</b></div><div class="rank"><span>🧁 حلويات</span><b>8</b></div></div></div></div></div></section>
 
 
 <section id="addOfferPage" class="addOffer hidden">
@@ -461,17 +505,14 @@ if(window.supabase) {
           <input id="mealOriginalPrice" type="number" min="0" step="0.01" placeholder="السعر الأصلي">
           <input id="mealFoodfyPrice" type="number" min="0" step="0.01" placeholder="سعر العرض">
           <input id="mealQuantity" type="number" min="0" step="1" placeholder="الكمية المتاحة">
-          <input id="mealPickupTime" placeholder="وقت الاستلام (مثال: 8 - 10 م)">
+          <input id="mealPickupTime" placeholder="وقت الاستلام (مثال: 8 - 10 م)"><input id="mealExpiresAt" type="datetime-local" title="وقت انتهاء العرض"><label style="font-size:13px;color:var(--muted)"><input id="mealUnconsumed" type="checkbox" checked> أؤكد أن الوجبة غير مُستهلكة وفائض غير مُباع</label>
           <input id="mealRestaurantName" placeholder="اسم المطعم">
           <button class="btn primary" onclick="publishMeal()">نشر العرض</button>
           <div id="mealMessage" style="font-size:14px;color:var(--muted)"></div>
         </div>
       </div>
     </div>
-
-    
-<div class="finance-card"><span class="muted">عمولة Foodfy</span><div id="financeCommission" class="finance-number">0 ج.م</div></div>
-    <div class="finance-card"><span class="muted">صافي المطعم</span><div id="financeNet" class="finance-number">0 ج.م</div></div>
+</div>
   </div>
 </div>
 
@@ -498,7 +539,7 @@ if(window.supabase) {
       <input id="authEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="email" required>
       <input id="authPhone" placeholder="رقم الهاتف" autocomplete="tel">
       <input id="authPassword" type="password" placeholder="كلمة المرور" autocomplete="current-password" required>
-      <input id="authPassword2" type="password" placeholder="تأكيد كلمة المرور" autocomplete="new-password">
+      <input id="authPassword2" type="password" placeholder="تأكيد كلمة المرور" autocomplete="new-password"><div id="accountTypeWrap" style="display:none;margin-top:5px"><label style="font-size:13px;color:var(--muted)">نوع الحساب</label><select id="accountType"><option value="customer">👤 عميل</option><option value="restaurant">🏪 مطعم</option></select></div>
       <button class="btn primary" id="authSubmit" onclick="submitAuth()">متابعة</button>
       <button class="btn secondary" id="authSwitch" onclick="switchAuthMode()">إنشاء حساب جديد</button>
       <button class="btn secondary" id="authLogout" onclick="logoutUser()" style="display:none">تسجيل الخروج</button>
@@ -518,12 +559,113 @@ if(window.supabase) {
 
 <script>
 let current='all',qty=1,cart={name:'وجبة دجاج مشوية',price:82};
-const pages=['home','offers','details','checkout','orders','restaurant','addOffer','facts','map','impact','restaurantDetails','points'];
+const pages=['home','offers','details','checkout','orders','restaurant','addOffer','facts','map','impact','restaurantDetails','points','account'];
+
+async function handleAccountNav(){
+  if(!foodfySupabase){ openModal('login'); return; }
+  const {data:{session}} = await foodfySupabase.auth.getSession();
+  if(!session){ openModal('login'); return; }
+  const type = session.user.user_metadata?.account_type || 'customer';
+  if(type === 'restaurant') showPage('restaurant');
+  else { await loadAccountStats(); showPage('account'); }
+}
+
+async function loadAccountStats(){
+  if(!foodfySupabase) return;
+  const {data:{session}} = await foodfySupabase.auth.getSession();
+  if(!session) return;
+  const u=session.user;
+  document.getElementById('accountWelcome').textContent='مرحبًا ' + (u.user_metadata?.full_name || 'بك') + ' 👋';
+  document.getElementById('accountEmail').textContent=u.email || '';
+  const {count:ordersCount}=await foodfySupabase.from('orders').select('*',{count:'exact',head:true}).eq('customer_id',u.id).eq('status','completed');
+  document.getElementById('userOrders').textContent=ordersCount || 0;
+  document.getElementById('userSavedMeals').textContent=ordersCount || 0;
+  document.getElementById('userPoints').textContent=(ordersCount || 0)*10;
+  document.getElementById('userImpact').textContent=(ordersCount || 0)*10;
+}
+
+async function submitRestaurantVerification(){
+  if(!foodfySupabase) return;
+  const {data:{session}}=await foodfySupabase.auth.getSession();
+  if(!session){openModal('login');return;}
+  if((session.user.user_metadata?.account_type || '') !== 'restaurant'){
+    toast('⚠️ هذا النموذج لحسابات المطاعم فقط'); return;
+  }
+  const proof=document.getElementById('restaurantProof').files?.[0];
+  const front=document.getElementById('restaurantFrontPhoto').files?.[0];
+  const legal=document.getElementById('restaurantLegalName').value.trim();
+  const phone=document.getElementById('restaurantPhone').value.trim();
+  const address=document.getElementById('restaurantAddress').value.trim();
+  if(!legal || !phone || !address || !proof || !front){
+    document.getElementById('verificationMessage').textContent='اكتب بيانات المطعم وارفع إثبات النشاط وصورة الواجهة.';
+    return;
+  }
+  const safe=(f)=>f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const base=session.user.id;
+  const uploads=[];
+  for(const file of [proof,front]){
+    const path=`restaurant-verification/${base}/${Date.now()}-${safe(file)}`;
+    const {error}=await foodfySupabase.storage.from('food-images').upload(path,file,{upsert:false,contentType:file.type});
+    if(error){
+      document.getElementById('verificationMessage').textContent='❌ تعذر رفع مستند التحقق: '+error.message;
+      return;
+    }
+    uploads.push(path);
+  }
+  const {error}=await foodfySupabase.auth.updateUser({
+    data:{
+      account_type:'restaurant',
+      restaurant_legal_name:legal,
+      restaurant_phone:phone,
+      restaurant_address:address,
+      restaurant_maps:document.getElementById('restaurantMaps').value.trim(),
+      verification_status:'pending',
+      verification_proof_path:uploads[0],
+      restaurant_front_path:uploads[1]
+    }
+  });
+  if(error){
+    document.getElementById('verificationMessage').textContent='❌ تعذر حفظ طلب التحقق: '+error.message;
+    return;
+  }
+  document.getElementById('verificationMessage').textContent='✅ تم إرسال طلب التحقق. حالة المطعم الآن: قيد المراجعة.';
+  updateRestaurantVerificationUI('pending');
+}
+
+function updateRestaurantVerificationUI(status){
+  const badge=document.getElementById('verificationBadge');
+  const add=document.getElementById('restaurantAddOfferBtn');
+  if(!badge || !add) return;
+  if(status==='approved'){
+    badge.className='verification-status status-approved'; badge.textContent='🟢 تم التحقق';
+    add.disabled=false; add.style.opacity='1';
+  }else if(status==='rejected'){
+    badge.className='verification-status status-rejected'; badge.textContent='🔴 مرفوض';
+    add.disabled=true; add.style.opacity='.5';
+  }else{
+    badge.className='verification-status status-pending'; badge.textContent='🟡 قيد المراجعة';
+    add.disabled=true; add.style.opacity='.5';
+  }
+}
+
+async function loadRestaurantVerification(){
+  if(!foodfySupabase) return;
+  const {data:{session}}=await foodfySupabase.auth.getSession();
+  if(!session) return;
+  const meta=session.user.user_metadata || {};
+  if((meta.account_type||'customer')!=='restaurant') return;
+  document.getElementById('restaurantLegalName').value=meta.restaurant_legal_name||'';
+  document.getElementById('restaurantPhone').value=meta.restaurant_phone||'';
+  document.getElementById('restaurantAddress').value=meta.restaurant_address||'';
+  document.getElementById('restaurantMaps').value=meta.restaurant_maps||'';
+  updateRestaurantVerificationUI(meta.verification_status||'pending');
+}
+
 function showPage(page){
   document.getElementById('homePage').classList.toggle('hidden',page!=='home');
   pages.filter(x=>x!=='home').forEach(x=>document.getElementById(x+'Page').classList.toggle('hidden',x!==page));
   window.scrollTo({top:0,behavior:'smooth'});
-  if(page === 'offers' && typeof loadLiveOffers === 'function') loadLiveOffers();
+  if(page === 'offers' && typeof loadLiveOffers === 'function') loadLiveOffers(); if(page === 'restaurant' && typeof loadRestaurantVerification === 'function') loadRestaurantVerification(); if(page === 'account' && typeof loadAccountStats === 'function') loadAccountStats();
 }
 function setFilter(btn,type){document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));btn.classList.add('active');current=type;filterOffers()}
 function filterOffers(){let q=(document.getElementById('search').value||'').toLowerCase();document.querySelectorAll('.offer').forEach(x=>x.style.display=((current==='all'||x.dataset.type===current)&&x.dataset.name.toLowerCase().includes(q))?'block':'none')}
@@ -548,7 +690,7 @@ async function loadLiveOffers(){
 
   const {data, error} = await foodfySupabase
     .from('meals')
-    .select('id,name,description,original_price,foodfy_price,quantity,pickup_time,image_url,restaurant_name,created_at')
+    .select('id,name,description,original_price,foodfy_price,quantity,pickup_time,expires_at,image_url,restaurant_name,created_at')
     .gt('quantity', 0)
     .order('created_at', {ascending:false});
 
@@ -598,7 +740,7 @@ async function loadLiveOffers(){
             <span class="price">${price.toFixed(0)} ج.م</span>
           </div>
           <div class="offerBottom">
-            <span>⏰ ${escapeHtml(meal.pickup_time || 'وقت الاستلام يحدد مع المطعم')}</span>
+            <span>⏰ ${escapeHtml(meal.pickup_time || 'وقت الاستلام يحدد مع المطعم')} ${meal.expires_at ? "• ينتهي "+new Date(meal.expires_at).toLocaleString("ar-EG") : ""}</span>
             <button class="btn primary" onclick="openLiveDetails('${id}')">التفاصيل</button>
           </div>
         </div>
@@ -712,7 +854,7 @@ async function submitAuth(){
     const {data,error}=await foodfySupabase.auth.signUp({
       email,
       password,
-      options:{ data:{ full_name:name, phone:phone } }
+      options:{ data:{ full_name:name, phone:phone, account_type:document.getElementById('accountType')?.value || 'customer', verification_status:(document.getElementById('accountType')?.value === 'restaurant' ? 'pending' : 'approved') } }
     });
     if(error){ setAuthMessage('❌ '+error.message); return; }
 
@@ -725,36 +867,11 @@ async function submitAuth(){
     if(data.session) setTimeout(closeModal,800);
   } else {
     const {data,error}=await foodfySupabase.auth.signInWithPassword({email,password});
-
-    if(!error && data?.user){
-      setAuthMessage('✅ تم تسجيل الدخول بنجاح.', true);
-      updateLoginButtons(true, data.user.email || email);
-      setTimeout(closeModal,600);
-      return;
-    }
-
-    // لو الإيميل غير مسجل، نحاول إنشاء الحساب تلقائيًا من زر "تسجيل الدخول".
-    // لو الحساب موجود بالفعل بكلمة مرور خاطئة، Supabase لن يسمح بإنشائه مرة أخرى.
-    const {data:created,error:createError}=await foodfySupabase.auth.signUp({
-      email,
-      password,
-      options:{ data:{ full_name:email.split('@')[0], phone:'' } }
-    });
-
-    if(createError){
-      setAuthMessage('❌ البريد أو كلمة المرور غير صحيحة، أو الحساب يحتاج تأكيد البريد.');
-      return;
-    }
-
-    if(created?.session && created?.user){
-      setAuthMessage('✅ لم يكن لديك حساب، فتم إنشاء حسابك وتسجيل الدخول تلقائيًا.', true);
-      updateLoginButtons(true, created.user.email || email);
-      setTimeout(closeModal,800);
-    }else{
-      setAuthMessage('✅ تم إنشاء الحساب. لو طلب Supabase تأكيد البريد، أكّد البريد أولًا ثم سجّل الدخول.', true);
-    }
-  }
-}
+    if(error){ setAuthMessage('❌ البريد أو كلمة المرور غير صحيحة، أو الحساب يحتاج تأكيد البريد.'); return; }
+    setAuthMessage('✅ تم تسجيل الدخول بنجاح.', true);
+    updateLoginButtons(true, data.user?.email || email);
+    setTimeout(closeModal,600);
+  }}
 
 async function logoutUser(){
   if(foodfySupabase) await foodfySupabase.auth.signOut();
@@ -764,23 +881,23 @@ async function logoutUser(){
 
 
 function updateLoginButtons(isLoggedIn, email=''){
-  document.querySelectorAll('button').forEach(btn=>{
-    const txt = btn.textContent.trim();
-    const onclick = btn.getAttribute('onclick') || '';
-    if (onclick.includes("openModal('login')") || txt === 'دخول' || txt === 'حسابي') {
-      btn.textContent = isLoggedIn ? 'حسابي' : 'دخول';
-    }
-  });
+  const btn=document.getElementById('accountNavBtn');
+  const reg=document.getElementById('registerNavBtn');
+  if(btn){
+    btn.textContent=isLoggedIn ? 'حسابي' : 'دخول';
+    btn.className=isLoggedIn ? 'btn primary' : 'btn secondary';
+  }
+  if(reg) reg.style.display=isLoggedIn ? 'none' : 'inline-flex';
 }
 
 async function refreshAuthUI(){
   if(!foodfySupabase) return;
 
   const {data:{session}} = await foodfySupabase.auth.getSession();
-  updateLoginButtons(!!session, session?.user?.email || '');
+  updateLoginButtons(!!session, session?.user?.email || ''); if(session?.user?.user_metadata?.account_type==='restaurant') loadRestaurantVerification();
 
   foodfySupabase.auth.onAuthStateChange((_event, newSession)=>{
-    updateLoginButtons(!!newSession, newSession?.user?.email || '');
+    updateLoginButtons(!!newSession, newSession?.user?.email || ''); if(newSession?.user?.user_metadata?.account_type==='restaurant') loadRestaurantVerification();
   });
 }
 
